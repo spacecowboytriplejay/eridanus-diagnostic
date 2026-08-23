@@ -26,30 +26,120 @@ const STRUCTURES = [
   { value: 'other', label: 'Other / not sure', rate: 0.075 },
 ];
 
+// ── PARAMETRIC HALO PATTERNS ─────────────────────────────────────────────────
+// One generator, four formations. Each pillar passes its own parameters
+// (point count, radius, formation type, color); nothing here is hand-drawn
+// per letter, it's the same math producing four distinct results.
+function generateHaloPattern(formation, color, seed) {
+  const cx = 60, cy = 60;
+  const n = 5 + seed;
+
+  if (formation === 'grid') {
+    // H — Hard to Fake: a real lattice, connected by row and column adjacency
+    const cols = 3, rows = 2;
+    const grid = [];
+    for (let r = 0; r < rows; r++) {
+      const row = [];
+      for (let c = 0; c < cols; c++) row.push([30 + c * 30, 40 + r * 30]);
+      grid.push(row);
+    }
+    const gridLines = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (c < cols - 1) {
+          const [x1, y1] = grid[r][c], [x2, y2] = grid[r][c + 1];
+          gridLines.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1" stroke-dasharray="3 5" opacity="0.35" class="halo-pattern-line"/>`);
+        }
+        if (r < rows - 1) {
+          const [x1, y1] = grid[r][c], [x2, y2] = grid[r + 1][c];
+          gridLines.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1" stroke-dasharray="3 5" opacity="0.35" class="halo-pattern-line"/>`);
+        }
+      }
+    }
+    const gridDots = grid.flat().map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2" fill="${color}" opacity="0.55" class="halo-pattern-dot"/>`).join('');
+    return `
+    <svg class="halo-pattern" viewBox="0 0 120 120" style="position:absolute;bottom:-10px;right:-10px;width:130px;height:130px;pointer-events:none;opacity:0.5;transition:opacity 400ms ease;">
+      <circle cx="${cx}" cy="${cy}" r="52" fill="none" stroke="${color}" stroke-width="0.5" opacity="0.15"/>
+      ${gridLines.join('')}
+      ${gridDots}
+    </svg>`;
+  }
+
+  const pts = [];
+
+  if (formation === 'converge') {
+    // A — Anchored to Real Value: lines weighted downward to a single base
+    const base = [cx, 105];
+    for (let i = 0; i < n; i++) {
+      const angle = (Math.PI / (n - 1)) * i;
+      pts.push([cx - 45 * Math.cos(angle), 25 + 55 * Math.sin(angle)]);
+    }
+    pts.push(base);
+  } else if (formation === 'ring') {
+    // L — Low Obsolescence: a stable, slow orbital ring
+    const r = 34;
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI / n) * i;
+      pts.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
+    }
+  } else {
+    // O — Operator-Grounded: spokes radiating from one strong center
+    const r = 40;
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI / n) * i;
+      pts.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
+    }
+  }
+
+  const lines = formation === 'spokes'
+    ? pts.map(([x, y]) => `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="1" stroke-dasharray="3 5" opacity="0.35" class="halo-pattern-line"/>`).join('')
+    : pts.map(([x, y], i) => {
+        const [nx, ny] = pts[(i + 1) % pts.length];
+        return `<line x1="${x}" y1="${y}" x2="${nx}" y2="${ny}" stroke="${color}" stroke-width="1" stroke-dasharray="3 5" opacity="0.35" class="halo-pattern-line"/>`;
+      }).join('');
+
+  const dots = pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2" fill="${color}" opacity="0.55" class="halo-pattern-dot"/>`).join('');
+
+  return `
+    <svg class="halo-pattern" viewBox="0 0 120 120" style="position:absolute;bottom:-10px;right:-10px;width:130px;height:130px;pointer-events:none;opacity:0.5;transition:opacity 400ms ease;">
+      <circle cx="${cx}" cy="${cy}" r="52" fill="none" stroke="${color}" stroke-width="0.5" opacity="0.15"/>
+      ${lines}
+      ${dots}
+    </svg>`;
+}
+
 const HALO_PILLARS = [
   {
     letter: 'H',
     title: 'Hard to Fake',
     body: 'Physical land and agricultural infrastructure. You can stand on it. You can touch it. It exists in the real world, not on a spreadsheet.',
     color: '#8B7355',
+    formation: 'grid',
+    seed: 1,
   },
   {
     letter: 'A',
     title: 'Anchored to Real Value',
     body: 'Eridanus acquires assets at below-market value. Your capital is backed by assets worth more than the entry price from day one.',
     color: '#6B8E6B',
+    formation: 'converge',
+    seed: 2,
   },
   {
     letter: 'L',
     title: 'Low Obsolescence',
     body: 'Agricultural land does not become technologically stranded. It does not depreciate like a car or a server. It produces, season after season.',
     color: '#7A8B6B',
+    formation: 'ring',
+    seed: 3,
   },
   {
     letter: 'O',
     title: 'Operator-Grounded',
     body: 'Cobus Nel has farmed, traded commodities, and navigated business rescues. The person managing your capital has operated in the real world.',
     color: '#8B7A55',
+    formation: 'spokes',
+    seed: 1,
   },
 ];
 
@@ -123,17 +213,24 @@ function render() {
     ${renderNav()}
     ${renderHero()}
     ${renderLogos()}
+    ${renderVideoInterviews()}
     ${renderDiagnostic()}
     ${renderHALO()}
     ${renderCaseStudies()}
+    ${renderComparison()}
+    ${renderMeetTheArchitect()}
     ${renderOperator()}
+    ${renderWhyHalo()}
     ${renderFinalCTA()}
+    ${renderLeadForm()}
     ${renderFooter()}
   `;
 
   observeFadeIns();
   initDiagnostic();
   initFloatingParticles();
+  initLeadForm();
+  initVideoInterviews();
 }
 
 // ── NAV ──────────────────────────────────────────────────────────────────────
@@ -258,7 +355,7 @@ function renderLogos() {
       <p style="font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-3);text-align:center;margin-bottom:28px;">As Seen On</p>
       <div style="display:flex;align-items:center;justify-content:center;gap:clamp(2rem,5vw,4rem);flex-wrap:wrap;">
         ${logos.map(l => `
-          <div style="opacity:0.45;transition:opacity 250ms;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.45'">
+          <div class="logo-accent" style="opacity:0.45;transition:opacity 250ms;position:relative;padding-bottom:8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.45'">
             <img src="${l.src}" alt="${l.alt}" style="height:${l.h};width:auto;max-width:130px;object-fit:contain;filter:brightness(0) invert(1);" loading="lazy"/>
           </div>
         `).join('')}
@@ -267,7 +364,70 @@ function renderLogos() {
   </div>`;
 }
 
-// ── DIAGNOSTIC TOOL ──────────────────────────────────────────────────────────
+// ── VIDEO INTERVIEWS ─────────────────────────────────────────────────────────
+// Same two Ontbytsake appearances already live on cobusnel.com, same titles
+// and descriptions already approved there, reused here for consistency.
+const VIDEOS = [
+  {
+    id: 'ROxZpJNAazM',
+    title: 'Capital structures and agricultural investment in South Africa',
+    desc: 'Cobus Nel explains how Eridanus acquires physical agricultural assets at below-market value and why the Venture Capital structure creates a compelling net-return case for serious investors.',
+  },
+  {
+    id: 'pKEN61_0fMc',
+    title: 'Investment architecture for the South African investor',
+    desc: 'A second conversation on Ontbyt Sake covering the mechanics of tax-efficient investment structures, the Eridanus investment vehicle, and what separates a secured return from a speculative one.',
+  },
+];
+
+function renderVideoInterviews() {
+  return `
+  <section class="section" style="background:var(--bg);border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="fade-in" style="text-align:center;margin-bottom:3rem;">
+        <span class="eyebrow">National TV, In Full</span>
+        <h2 class="headline" style="margin-bottom:1rem;">Watch the actual conversations.</h2>
+        <p style="max-width:520px;margin:0 auto;font-size:16px;">Not a clip. Not a highlight reel. The full Ontbytsake interviews, real operator, real questions, on the record.</p>
+      </div>
+      <div class="fade-in" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" class="grid-2">
+        ${VIDEOS.map((v, i) => `
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;">
+            <div class="video-slot" data-video-id="${v.id}" data-video-title="${v.title.replace(/"/g, '&quot;')}"
+              style="position:relative;width:100%;aspect-ratio:16/9;cursor:pointer;overflow:hidden;background:#080c0a;">
+              <img class="video-thumb" src="https://img.youtube.com/vi/${v.id}/maxresdefault.jpg" alt="${v.title}" loading="lazy"
+                style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 400ms ease;"
+                onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'"
+                onerror="this.src='https://img.youtube.com/vi/${v.id}/hqdefault.jpg'"/>
+              <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);pointer-events:none;"></div>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                <div style="width:56px;height:56px;border-radius:50%;background:rgba(212,165,116,0.92);display:flex;align-items:center;justify-content:center;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#0a0a0a"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+            </div>
+            <div style="padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;flex:1;">
+              <h3 style="font-family:var(--serif);font-weight:600;font-size:18px;color:var(--text);line-height:1.3;margin:0;">${v.title}</h3>
+              <p style="font-size:13px;color:var(--text-2);line-height:1.65;flex:1;margin:0;">${v.desc}</p>
+              <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener" style="font-size:12px;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;margin-top:auto;">Watch on YouTube →</a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
+function initVideoInterviews() {
+  document.querySelectorAll('.video-slot').forEach(slot => {
+    slot.addEventListener('click', () => {
+      const id = slot.dataset.videoId;
+      const title = slot.dataset.videoTitle;
+      slot.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1" title="${title}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+        style="position:absolute;inset:0;width:100%;height:100%;border:none;"></iframe>`;
+    }, { once: true });
+  });
+}
 function renderDiagnostic() {
   return `
   <section id="diagnostic" class="section" style="background:var(--bg);">
@@ -386,13 +546,14 @@ function renderHALO() {
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);" class="grid-4">
         ${HALO_PILLARS.map((p, i) => `
-          <div class="fade-in" style="transition-delay:${i * 80}ms;background:var(--bg);padding:2.5rem 2rem;position:relative;overflow:hidden;cursor:default;transition:background 300ms;" onmouseover="this.style.background='var(--bg-3)'" onmouseout="this.style.background='var(--bg)'">
+          <div class="fade-in halo-tile" style="transition-delay:${i * 80}ms;background:var(--bg);padding:2.5rem 2rem;position:relative;overflow:hidden;cursor:default;transition:background 300ms;" onmouseover="this.style.background='var(--bg-3)'" onmouseout="this.style.background='var(--bg)'">
             <div class="halo-letter" style="font-family:var(--serif);font-size:72px;font-weight:700;color:var(--gold);opacity:0.07;position:absolute;top:1rem;right:1.25rem;line-height:1;pointer-events:none;">${p.letter}</div>
-            <div style="width:40px;height:40px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;transition:background 300ms;">
+            ${generateHaloPattern(p.formation, p.color, p.seed)}
+            <div style="width:40px;height:40px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;transition:background 300ms;position:relative;z-index:2;">
               <span style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--gold);">${p.letter}</span>
             </div>
-            <h3 style="font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:0.875rem;color:var(--text);">${p.title}</h3>
-            <p style="font-size:13px;line-height:1.75;">${p.body}</p>
+            <h3 style="font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:0.875rem;color:var(--text);position:relative;z-index:2;">${p.title}</h3>
+            <p style="font-size:13px;line-height:1.75;position:relative;z-index:2;">${p.body}</p>
           </div>
         `).join('')}
       </div>
@@ -452,6 +613,64 @@ function renderCaseStudies() {
   </section>`;
 }
 
+// ── COMPARISON ────────────────────────────────────────────────────────────────
+function renderComparison() {
+  return `
+  <section class="section" style="background:var(--bg-2);border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="fade-in" style="text-align:center;margin-bottom:4rem;">
+        <span class="eyebrow">The Difference</span>
+        <h2 class="headline" style="margin-bottom:1rem;">Most portfolios are full of things that expire.</h2>
+      </div>
+      <div class="fade-in" style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:900px;margin:0 auto;">
+        <div style="background:var(--bg);padding:2.75rem 2.25rem;">
+          <p style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:0.75rem;">The Old Way</p>
+          <h3 style="font-family:var(--serif);font-size:22px;font-weight:600;color:var(--text);margin-bottom:1.5rem;">Paper &amp; trend assets</h3>
+          ${['Value tied to sentiment and market cycles','Obsolescence built into the asset itself','Nothing physical backing the number on screen','Performs whether you understand it or not'].map(t => `
+          <div class="compare-item" style="display:flex;gap:12px;padding:10px 0;font-size:14px;color:var(--text-2);line-height:1.5;">
+            <span style="flex-shrink:0;color:var(--text-3);">✕</span>${t}
+          </div>`).join('')}
+        </div>
+        <div style="background:linear-gradient(160deg, rgba(201,162,39,0.08), var(--bg) 60%);padding:2.75rem 2.25rem;">
+          <p style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem;">The HALO Standard</p>
+          <h3 style="font-family:var(--serif);font-size:22px;font-weight:600;color:var(--text);margin-bottom:1.5rem;">Halo assets</h3>
+          ${['Produces whether markets are up or down','Service life measured in decades','Value anchored in something real, tangible, essential','Structured plainly enough to actually understand'].map(t => `
+          <div class="compare-item" style="display:flex;gap:12px;padding:10px 0;font-size:14px;color:var(--text);line-height:1.5;">
+            <span style="flex-shrink:0;color:var(--gold);">✓</span>${t}
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+// ── WHY HALO ──────────────────────────────────────────────────────────────────
+function renderWhyHalo() {
+  const points = [
+    { n: '01', t: 'Real, not paper', d: 'Every rand is structured against a physical, productive asset. Not a ticker, not a promise.' },
+    { n: '02', t: 'Built to last', d: 'Halo assets carry a service life measured in decades. What you hold in year one still works in year twenty.' },
+    { n: '03', t: 'Plainly understood', d: "If you can't explain it back in a sentence, it's not a halo asset. Structure over spin, always." },
+  ];
+  return `
+  <section class="section" style="background:var(--bg);border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="fade-in" style="text-align:center;margin-bottom:4rem;">
+        <span class="eyebrow">Why "HALO"</span>
+        <h2 class="headline" style="margin-bottom:1rem;">One idea, held plainly.</h2>
+        <p style="font-size:15px;color:var(--text-2);max-width:480px;margin:0 auto;">No fractions to memorise. Just the mechanism, stated honestly.</p>
+      </div>
+      <div class="fade-in" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        ${points.map(p => `
+        <div style="background:var(--bg);padding:2.25rem 2rem;">
+          <div style="font-family:var(--mono);font-size:12px;color:var(--gold);margin-bottom:1rem;">${p.n}</div>
+          <h4 style="font-family:var(--serif);font-size:19px;font-weight:600;color:var(--text);margin-bottom:0.75rem;">${p.t}</h4>
+          <p style="font-size:13.5px;color:var(--text-2);line-height:1.6;">${p.d}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
 // ── OPERATOR ─────────────────────────────────────────────────────────────────
 function renderOperator() {
   return `
@@ -494,7 +713,48 @@ function renderOperator() {
   </section>`;
 }
 
-// ── FINAL CTA ─────────────────────────────────────────────────────────────────
+// ── MEET THE ARCHITECT ───────────────────────────────────────────────────────
+// Narrative, humanizing section. Built from facts already established and
+// used elsewhere on this page, told as a story rather than a bullet list.
+// Two image slots are placeholders, marked clearly below, until real photos
+// are supplied: one professional portrait, one field/operator shot.
+function renderMeetTheArchitect() {
+  return `
+  <section class="section" style="background:var(--bg);border-top:1px solid var(--border);">
+    <div class="container" style="max-width:1000px;">
+      <div class="fade-in" style="text-align:center;margin-bottom:3.5rem;">
+        <span class="eyebrow">Meet the Architect</span>
+        <h2 class="headline" style="margin-bottom:1rem;">Who is Cobus Nel?</h2>
+        <p style="max-width:560px;margin:0 auto;font-size:16px;">Not a fund manager who found farming interesting. An operator who priced real assets long before he structured capital around them.</p>
+      </div>
+
+      <div class="fade-in" style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:3rem;" class="grid-2">
+        <div style="aspect-ratio:4/5;background:var(--bg-2);border:1px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;padding:1.5rem;">
+          <p style="font-family:var(--mono);font-size:11px;color:var(--text-3);line-height:1.8;letter-spacing:0.04em;">
+            [ PHOTO SLOT 1 ]<br>Professional portrait<br><span style="color:var(--text-2);">Replace this block with a real image once supplied</span>
+          </p>
+        </div>
+        <div style="aspect-ratio:4/5;background:var(--bg-2);border:1px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;padding:1.5rem;">
+          <p style="font-family:var(--mono);font-size:11px;color:var(--text-3);line-height:1.8;letter-spacing:0.04em;">
+            [ PHOTO SLOT 2 ]<br>Field / operator shot<br>Standing on the vehicle, maize behind him<br><span style="color:var(--text-2);">Replace this block with a real image once supplied</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="fade-in" style="max-width:680px;margin:0 auto;">
+        <p style="font-size:16px;line-height:1.85;margin-bottom:1.25rem;">
+          Cobus Nel trained as a chartered accountant at Ernst and Young, first in Pretoria, then in Bermuda, passing every CA(SA) board exam on the first attempt. That training put him inside the machinery of international financial structures at a level most South African investors never see directly.
+        </p>
+        <p style="font-size:16px;line-height:1.85;margin-bottom:1.25rem;">
+          Then he stepped outside it. Commodity trading at Export Trading Group taught him how real assets get priced, mispriced, and corrected in real time. Hands-on farming, and navigating business rescues and liquidations, taught him what something is actually worth once the spreadsheet stops mattering and the asset has to stand on its own.
+        </p>
+        <p style="font-size:16px;line-height:1.85;">
+          In 2018, he co-founded Eridanus with Martin van Vuuren, built specifically to put that judgment to work: acquiring real South African agricultural assets at below-market value, structured for investors who want their capital anchored in something they could, if they wanted to, actually go and stand on.
+        </p>
+      </div>
+    </div>
+  </section>`;
+}
 function renderFinalCTA() {
   return `
   <section class="section" style="background:var(--bg);border-top:1px solid var(--border);position:relative;overflow:hidden;">
@@ -524,6 +784,139 @@ function renderFinalCTA() {
       </div>
     </div>
   </section>`;
+}
+
+// ── LEAD FORM ─────────────────────────────────────────────────────────────────
+// PASTE THE SAME GOOGLE APPS SCRIPT WEB APP URL USED ON cobusnel.com/apply
+// (see APPS_SCRIPT_for_Google_Sheet.gs from the earlier fix). Same sheet,
+// two entry points, distinguished by the "source" field on each row.
+const SHEET_ENDPOINT_URL = 'PASTE_APPS_SCRIPT_URL_HERE';
+
+function renderLeadForm() {
+  return `
+  <section id="lead-form-section" class="section" style="background:var(--bg-2);border-top:1px solid var(--border);">
+    <div class="container" style="max-width:560px;">
+      <div class="fade-in" style="text-align:center;margin-bottom:2.5rem;">
+        <span class="eyebrow">See Where You Stand</span>
+        <h2 class="headline" style="margin-bottom:1rem;">See what your capital could keep.</h2>
+        <p style="font-size:15px;">Drop your details and Cobus will come back with a plain, personalised picture of what the HALO framework would mean for your capital. No obligation, no pressure.</p>
+      </div>
+
+      <div class="fade-in" style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:2.25rem;">
+        <p style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.5rem;">Step 1 of 1 · 60 seconds</p>
+
+        <form id="lead-form" novalidate>
+          <div style="display:grid;gap:1rem;margin-bottom:1rem;">
+            <div>
+              <input type="text" id="lf-name" placeholder="Full name *" required
+                style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;border-radius:6px;"/>
+              <p id="lf-err-name" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Required</p>
+            </div>
+            <div>
+              <input type="email" id="lf-email" placeholder="Email *" required
+                style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;border-radius:6px;"/>
+              <p id="lf-err-email" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Valid email required</p>
+            </div>
+            <div>
+              <input type="tel" id="lf-phone" placeholder="Mobile *" required
+                style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;border-radius:6px;"/>
+              <p id="lf-err-phone" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Required</p>
+            </div>
+            <div>
+              <select id="lf-capital" required
+                style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;border-radius:6px;">
+                <option value="">Investable capital *</option>
+                <option value="below-1m">Below R1 million</option>
+                <option value="1m-2.5m">R1 million - R2.5 million</option>
+                <option value="2.5m-5m">R2.5 million - R5 million</option>
+                <option value="5m-plus">R5 million+</option>
+              </select>
+              <p id="lf-err-capital" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Required</p>
+            </div>
+            <div>
+              <select id="lf-province" required
+                style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;border-radius:6px;">
+                <option value="">Province *</option>
+                ${['Gauteng','Western Cape','KwaZulu-Natal','Eastern Cape','Free State','Mpumalanga','Limpopo','North West','Northern Cape','Outside South Africa'].map(p => `<option value="${p}">${p}</option>`).join('')}
+              </select>
+              <p id="lf-err-province" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Required</p>
+            </div>
+          </div>
+
+          <label style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:1.5rem;cursor:pointer;">
+            <input type="checkbox" id="lf-consent" required style="margin-top:2px;"/>
+            I agree that Cobus Nel may contact me about my projection and store my details for that purpose, in line with POPIA.
+          </label>
+
+          <button type="submit" id="lf-submit" class="btn-primary" style="width:100%;justify-content:center;">
+            Get my projection ${ARROW_SVG}
+          </button>
+          <p style="font-size:11px;color:var(--text-3);text-align:center;margin-top:1rem;">No spam. Your information stays with Cobus Nel.</p>
+        </form>
+
+        <div id="lf-success" style="display:none;text-align:center;padding:1rem 0;">
+          <p style="font-family:var(--serif);font-size:20px;color:var(--gold);margin-bottom:0.5rem;">You're in. Projection on the way.</p>
+          <p style="font-size:14px;color:var(--text-2);">Thank you. Cobus has your details and will be in touch shortly with your personalised picture.</p>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function initLeadForm() {
+  const form = document.getElementById('lead-form');
+  if (!form) return;
+  const submitBtn = document.getElementById('lf-submit');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const fields = {
+      name: document.getElementById('lf-name').value.trim(),
+      email: document.getElementById('lf-email').value.trim(),
+      phone: document.getElementById('lf-phone').value.trim(),
+      capital: document.getElementById('lf-capital').value,
+      province: document.getElementById('lf-province').value,
+      consent: document.getElementById('lf-consent').checked,
+    };
+
+    let valid = true;
+    const showErr = (id, show) => { document.getElementById(id).style.display = show ? 'block' : 'none'; };
+    showErr('lf-err-name', !fields.name); if (!fields.name) valid = false;
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email);
+    showErr('lf-err-email', !emailOk); if (!emailOk) valid = false;
+    showErr('lf-err-phone', !fields.phone); if (!fields.phone) valid = false;
+    showErr('lf-err-capital', !fields.capital); if (!fields.capital) valid = false;
+    showErr('lf-err-province', !fields.province); if (!fields.province) valid = false;
+    if (!fields.consent) valid = false;
+
+    if (!valid) return;
+
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+
+    try {
+      await fetch(SHEET_ENDPOINT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          firstName: fields.name,
+          lastName: '',
+          email: fields.email,
+          phone: fields.phone,
+          capitalRange: fields.capital,
+          source: 'eridanus-diagnostic.vercel.app (calculator form)',
+        }),
+      });
+      if (typeof fbq === 'function') { fbq('track', 'Lead', { content_name: 'Calculator Projection Request' }); }
+    } catch (err) {
+      console.error('Submission error:', err);
+    }
+
+    form.style.display = 'none';
+    document.getElementById('lf-success').style.display = 'block';
+  });
 }
 
 // ── FOOTER ────────────────────────────────────────────────────────────────────
