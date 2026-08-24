@@ -21,7 +21,11 @@ const LOGO_KYKNET = BASE + 'logos/kyknet.png';
 const LOGO_ONTBYT = BASE + 'logos/ontbytsake.png';
 const LOGO_PRETORIA_FM = BASE + 'logos/pretoria-fm.png';
 const LOGO_EY = BASE + 'logos/ey.png';
-const APPLY_URL = 'https://cobusnel.com/apply';
+// ONE destination for every call to action on this page: the form below.
+// This used to be https://cobusnel.com/apply, which sent the highest-intent
+// traffic to a second form on a second domain while the form on this page
+// went unused. One page, one action, one Lead event.
+const APPLY_URL = '#lead-form-section';
 
 // ── Data ────────────────────────────────────────────────────────────────────
 const CAPITAL_STEPS = [
@@ -253,10 +257,9 @@ function renderNav() {
   return `
   <nav style="position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;transition:background 300ms,backdrop-filter 300ms;" id="nav">
     <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
-      <a href="https://cobusnel.com" target="_blank" rel="noopener" style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--text);text-decoration:none;letter-spacing:0.02em;">Cobus Nel</a>
+      <span style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--text);letter-spacing:0.02em;">Cobus Nel</span>
       <div style="display:flex;align-items:center;gap:2rem;">
-        <a href="https://cobusnel.com" target="_blank" rel="noopener" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-2);text-decoration:none;transition:color 200ms;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-2)'">cobusnel.com</a>
-        <a href="${APPLY_URL}" target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;padding:10px 20px;">Apply Now ${ARROW_SVG}</a>
+        <a href="${APPLY_URL}" class="btn-primary" style="font-size:12px;padding:10px 20px;">Apply Now ${ARROW_SVG}</a>
       </div>
     </div>
   </nav>`;
@@ -293,7 +296,6 @@ function renderHero() {
           </div>
           <div class="fade-in" style="transition-delay:240ms;display:flex;gap:1rem;flex-wrap:wrap;">
             <a href="#diagnostic" class="btn-primary">Run My Diagnostic ${ARROW_SVG}</a>
-            <a href="https://cobusnel.com/for-investors" target="_blank" rel="noopener" class="btn-ghost">What is Eridanus?</a>
           </div>
           <div class="fade-in" style="transition-delay:320ms;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;gap:2.5rem;flex-wrap:wrap;">
             ${[
@@ -423,7 +425,6 @@ function renderVideoInterviews() {
             <div style="padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;flex:1;">
               <h3 style="font-family:var(--serif);font-weight:600;font-size:18px;color:var(--text);line-height:1.3;margin:0;">${v.title}</h3>
               <p style="font-size:13px;color:var(--text-2);line-height:1.65;flex:1;margin:0;">${v.desc}</p>
-              <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener" style="font-size:12px;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;margin-top:auto;">Watch on YouTube →</a>
             </div>
           </div>
         `).join('')}
@@ -536,7 +537,7 @@ function renderDiagnostic() {
             <p style="font-size:13px;margin-bottom:1.5rem;max-width:480px;margin-left:auto;margin-right:auto;">
               The diagnostic shows the gap. The Discovery Session shows you the structure. One session. Seven touchpoints. No obligation. Capital floor: R1 million.
             </p>
-            <a href="${APPLY_URL}" target="_blank" rel="noopener" class="btn-primary" style="font-size:15px;padding:16px 36px;">
+            <a href="${APPLY_URL}" class="btn-primary" style="font-size:15px;padding:16px 36px;">
               Apply for a Discovery Session ${ARROW_SVG}
             </a>
           </div>
@@ -574,7 +575,7 @@ function renderHALO() {
       </div>
 
       <div class="fade-in" style="text-align:center;margin-top:3rem;">
-        <a href="${APPLY_URL}" target="_blank" rel="noopener" class="btn-primary">
+        <a href="${APPLY_URL}" class="btn-primary">
           Apply for a Discovery Session ${ARROW_SVG}
         </a>
       </div>
@@ -620,7 +621,7 @@ function renderCaseStudies() {
       </div>
 
       <div class="fade-in" style="text-align:center;margin-top:3rem;">
-        <a href="${APPLY_URL}" target="_blank" rel="noopener" class="btn-primary">
+        <a href="${APPLY_URL}" class="btn-primary">
           Apply for a Discovery Session ${ARROW_SVG}
         </a>
       </div>
@@ -702,9 +703,6 @@ function renderOperator() {
             <p style="margin-bottom:2rem;font-size:15px;">
               He co-founded Eridanus with Martin van Vuuren in 2018. The firm is an FSCA-authorised Financial Services Provider (FSP 48947) acquiring real South African agricultural assets at below-market value.
             </p>
-            <a href="https://cobusnel.com/about" target="_blank" rel="noopener" class="btn-ghost">
-              Full biography ${ARROW_SVG}
-            </a>
           </div>
           <div style="display:flex;flex-direction:column;gap:1px;background:var(--border);">
             ${[
@@ -815,7 +813,7 @@ function renderFinalCTA() {
             { src: LOGO_EY, alt: 'EY', h: '20px' },
           ].map(l => `<img src="${l.src}" alt="${l.alt}" style="height:${l.h};width:auto;object-fit:contain;opacity:0.3;" loading="lazy"/>`).join('')}
         </div>
-        <a href="${APPLY_URL}" target="_blank" rel="noopener" class="btn-primary" style="font-size:15px;padding:18px 44px;">
+        <a href="${APPLY_URL}" class="btn-primary" style="font-size:15px;padding:18px 44px;">
           Apply for a Discovery Session ${ARROW_SVG}
         </a>
         <p style="font-size:11px;color:var(--text-3);margin-top:2rem;line-height:1.65;">
@@ -1006,22 +1004,11 @@ function renderFooter() {
   return `
   <footer style="background:var(--bg-2);border-top:1px solid var(--border);padding:48px 0 32px;">
     <div class="container">
-      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:3rem;" class="grid-3">
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:3rem;margin-bottom:3rem;" class="grid-2">
         <div>
           <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--text);margin-bottom:1rem;">Cobus Nel</div>
           <p style="font-size:13px;max-width:260px;margin-bottom:1rem;">South Africa's Capital Architect. CA(SA). Chief Investment Officer at Eridanus, an FSCA-authorised Financial Services Provider (FSP 48947).</p>
           <p style="font-size:11px;color:var(--text-3);">FSP 48947 | Operating since 2018</p>
-        </div>
-        <div>
-          <p style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.25rem;">Navigate</p>
-          <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            ${[
-              { href: 'https://cobusnel.com', label: 'cobusnel.com' },
-              { href: 'https://cobusnel.com/about', label: 'About Cobus' },
-              { href: 'https://cobusnel.com/for-investors', label: 'For Investors' },
-              { href: 'https://cobusnel.com/apply', label: 'Apply' },
-            ].map(l => `<a href="${l.href}" target="_blank" rel="noopener" style="font-size:13px;color:var(--text-2);text-decoration:none;transition:color 200ms;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-2)'">${l.label}</a>`).join('')}
-          </div>
         </div>
         <div>
           <p style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.25rem;">Legal</p>
@@ -1031,6 +1018,7 @@ function renderFooter() {
               { href: 'https://cobusnel.com/terms', label: 'Terms of Service' },
             ].map(l => `<a href="${l.href}" target="_blank" rel="noopener" style="font-size:13px;color:var(--text-2);text-decoration:none;transition:color 200ms;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-2)'">${l.label}</a>`).join('')}
           </div>
+          <p style="font-size:10px;color:var(--text-3);margin-top:1rem;line-height:1.6;">Opens in a new tab.</p>
         </div>
       </div>
       <div style="border-top:1px solid var(--border);padding-top:1.5rem;">

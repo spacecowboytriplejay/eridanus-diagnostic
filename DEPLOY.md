@@ -1,122 +1,113 @@
-# Putting this live at cobusnel.com/calculator
+# Getting this live
 
-## What the DNS already tells us
+## The one thing that causes the blank white page
 
-```
-cobusnel.com            A      216.198.79.1              (Vercel anycast)
-www.cobusnel.com        CNAME  ...vercel-dns-017.com     (Vercel)
-eridanus-diagnostic     A      216.198.79.3 / 64.29.17.3 (Vercel)
-```
+Vite's `base` decides what path the built HTML asks for its JavaScript and
+CSS from. It has to match where the page is actually served.
 
-cobusnel.com is already served by Vercel. **There is nothing to do in GoDaddy.**
-DNS resolves hostnames, not paths, so no DNS record can ever point
-`cobusnel.com/calculator` anywhere. A subpath is a routing decision made by
-whatever already answers for `cobusnel.com` — which is Vercel.
+| `base` | Works at | Blank page at |
+|---|---|---|
+| `'/'` | `eridanus-diagnostic.vercel.app` and `calculator.cobusnel.com` | `cobusnel.com/calculator` |
+| `'/calculator/'` | `cobusnel.com/calculator` behind a rewrite | any bare hostname |
 
-GoDaddy only becomes relevant if you take the subdomain route instead
-(`calculator.cobusnel.com`), which is one CNAME. See "Rejected" below.
+They are mutually exclusive. A blank white page with no console errors is
+almost always this: the HTML loaded, then asked for assets at a path that
+does not exist on that host.
 
-## Recommended: rewrite from the main site
+**This repo is set to `base: '/'`.** It works standalone. Do not change it
+unless you deliberately move to a subpath, and if you do, expect the bare
+vercel.app URL to go blank.
 
-Two projects stay separate and deploy independently. One public URL.
+## Recommended: calculator.cobusnel.com
 
-### 1. In the **cobusnel.com** repo
+A subdomain rather than a subpath. It is on the domain, so it carries the
+brand in an ad, and it needs no proxy, no rewrite and no path juggling.
 
-Add or merge into `vercel.json` at the repo root:
+1. Vercel → the `eridanus-diagnostic` project → Settings → Domains → Add
+   `calculator.cobusnel.com`
+2. Vercel shows you a CNAME record. Add it at whatever hosts cobusnel.com's
+   DNS. It will look like:
+
+       Type   CNAME
+       Name   calculator
+       Value  cname.vercel-dns.com
+
+3. Wait for Vercel to show the domain as Valid. Usually a few minutes, and
+   the TLS certificate is issued automatically.
+4. Load `https://calculator.cobusnel.com` and confirm the tab title reads
+   "Capital Diagnostic | Cobus Nel".
+
+That is the URL to put in the ads.
+
+## Alternative: cobusnel.com/calculator
+
+Only if you specifically need the subpath. It is more fragile, because you
+are proxying one Vercel project through another.
+
+1. Set `base: '/calculator/'` in `vite.config.js` and redeploy this project
+2. In the **cobusnel.com** repo's `vercel.json`:
 
 ```json
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    {
-      "source": "/calculator",
-      "destination": "https://eridanus-diagnostic.vercel.app/"
-    },
-    {
-      "source": "/calculator/:match*",
-      "destination": "https://eridanus-diagnostic.vercel.app/:match*"
-    }
-  ],
-  "redirects": [
-    { "source": "/diagnostic", "destination": "/calculator", "permanent": true },
-    { "source": "/investments", "destination": "/calculator", "permanent": true }
-  ]
-}
+"rewrites": [
+  { "source": "/calculator", "destination": "https://eridanus-diagnostic.vercel.app/" },
+  { "source": "/calculator/:match*", "destination": "https://eridanus-diagnostic.vercel.app/:match*" }
+]
 ```
 
-The second rewrite is the one people forget. Without it the HTML loads and
-every asset 404s, because the browser asks for `/calculator/assets/index.js`
-and nothing is routed there.
+Both lines. The second is the one people leave out, and without it the HTML
+loads while every asset 404s. You would also need to repoint the canonical,
+`og:url` and `og:image` in `index.html` back to the `/calculator` paths.
 
-If `vercel.json` already exists, merge the arrays. Do not replace the file.
+## Before you spend money on it
 
-### 2. In **this** repo
+1. `main.js`, `SHEET_ENDPOINT_URL` — replace `PASTE_APPS_SCRIPT_URL_HERE`
+   with the Apps Script web app URL used on cobusnel.com/apply. Until then
+   the form shows an honest error and captures nothing.
+2. `index.html` — uncomment the two `fbq(...)` lines and insert Cobus's own
+   Meta dataset ID. Not the FR Plus one.
+3. Submit one real test lead and watch it land in the sheet. The Apps
+   Script call is `mode: 'no-cors'`, so the browser cannot tell you whether
+   it worked. The sheet is the only proof.
+4. Fix the `manuscdn` images on the root site. See `BRAND-SEARCH.md`.
 
-Already done:
+## Verifying a deploy in ten seconds
 
-- `vite.config.js` sets `base: '/calculator/'`, so every emitted URL is
-  `/calculator/...` and the rewrite above catches it.
-- The photo constants in `main.js` use `import.meta.env.BASE_URL`, so they
-  follow the base instead of hardcoding a leading slash.
-- `canonical` and the OG tags point at `https://cobusnel.com/calculator`, so
-  the raw `.vercel.app` URL does not compete with it in search or on shares.
+Open the URL, then check in this order:
 
-### 3. Ship and check
+- Tab title says "Capital Diagnostic | Cobus Nel"
+- The page is dark and the headline reads "Your capital is working. For whom?"
+- The "As Seen On" row shows four white logos, not four broken icons
+- DevTools → Network → filter by Status, nothing in red
 
-```bash
-git add -A && git commit -m "Serve diagnostic under /calculator" && git push
-```
+## Funnel discipline (changed 24 Aug)
 
-Then, in order:
+Every call to action on this page now points at `#lead-form-section`, the
+form on this page. Nothing else. The count went from 17 outbound links to 2.
 
-1. `https://cobusnel.com/calculator` renders.
-2. DevTools Network tab: no 404s. This is the failure mode to look for.
-3. `https://cobusnel.com/investments` 308s to `/calculator`.
-4. Submit one test lead. Confirm the row lands in the sheet.
-5. Meta Events Manager, Test Events: PageView and Lead both fire, and the
-   event source URL reads `cobusnel.com`, not the vercel.app domain.
+What was removed and why:
 
-## Why /calculator and not /investments
+| Removed | Why |
+|---|---|
+| 5x "Apply for a Discovery Session" to `cobusnel.com/apply` | The primary CTA was the biggest leak. It sent the highest-intent traffic to a second form on a second domain while the form on this page went unused. |
+| Nav wordmark + `cobusnel.com` link | Pure exit, no purpose |
+| Hero "What is Eridanus?" | Sat as a co-equal CTA and shipped cold traffic off-site before it had engaged with anything |
+| "Full biography" | Meet the Architect already tells that story on-page |
+| 2x "Watch on YouTube" | The embed plays inline on click; the link was a redundant exit |
+| Footer nav column | Four more exits for no gain |
 
-`/calculator` names the thing the page is. Every button on it already says
-"Run My Diagnostic" and "Show Me My Capital Gap"; the URL, the ad copy and
-the page all agree, which is what the Meta crawler and a cold investor are
-both checking. It also promises a tool rather than a pitch, which is a much
-lower-commitment click from an ad.
+What was deliberately KEPT:
 
-`/investments` reads as a category page and sets up an offer the page does
-not deliver: a visitor who clicks "investments" expects to see what Eridanus
-invests in, hits a slider instead, and bounces. It is also a stronger claim
-surface under Meta's financial-services rules than a diagnostic tool is.
-Keep it free for a real investments overview later, and 308 it to
-`/calculator` in the meantime so a typed guess still lands somewhere.
+- **Privacy Policy and Terms of Service**, in the footer, opening in a new
+  tab. These are not a UX choice. The form collects personal data and the
+  consent checkbox references POPIA. A page collecting personal data under a
+  POPIA consent statement, with no reachable privacy policy, is a compliance
+  problem regardless of how tight you want the funnel. New tab means the page
+  survives the click.
+- **The video embeds.** They play inline. They are proof, not an exit.
 
-The counterargument, honestly stated: `/investments` would match a far larger
-query class for the AI-search and GEO visibility work. That is a real cost.
-It is outweighed by the intent mismatch, and the right fix is to eventually
-build the page that genuinely belongs at `/investments`.
+`APPLY_URL` is now `#lead-form-section`. If you ever need to point it back at
+a real page, change that one constant and every CTA follows.
 
-## Do this before the lead campaign goes on, not after
-
-The Cobus lead campaign is built and paused with roughly R7.9k of the R10k
-left. Changing an ad's destination URL after it is running restarts the
-learning phase on that ad set. Right now the change is free. Set the
-destination to `https://cobusnel.com/calculator` when you publish, with the
-UTM string on each ad.
-
-## Rejected alternatives
-
-**Subdomain (`calculator.cobusnel.com`).** One CNAME in GoDaddy to
-`cname.vercel-dns.com`, then add the domain in the Vercel project. Fifteen
-minutes, near-zero risk. Rejected because it splits the cookie domain: the
-pixel would set first-party cookies on a different host from the main site,
-which weakens attribution across the profile funnel, and it shows a longer,
-less trusted display domain in the ad.
-
-**Merge this project into the cobusnel.com repo as a real route.** Better
-long term: no proxy hop, one deploy, one analytics context, no second project
-to keep in sync. Rejected for now only because it means touching the
-Manus-generated main site while a campaign is about to launch. Worth doing
-once the campaign is stable.
-
-**Anything in GoDaddy.** There is no DNS record that routes a path.
+**Consequence worth understanding:** the form is now the only way to convert
+on this page. If `SHEET_ENDPOINT_URL` is still the placeholder when you spend,
+the page converts at exactly zero. There is no longer a second path.

@@ -1,11 +1,14 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // Served at cobusnel.com/calculator via a Vercel rewrite from the main
-  // site. The base makes every emitted asset URL /calculator/... so the
-  // proxy catches them. Set this back to '/' only if the page ever moves
-  // to its own hostname.
-  base: '/calculator/',
+  // Root-relative. This build is served from its own hostname
+  // (calculator.cobusnel.com), so assets resolve at /assets/...
+  //
+  // Only change this to '/calculator/' if you move the page to a SUBPATH of
+  // the main site behind a Vercel rewrite. The two are mutually exclusive:
+  // a '/calculator/' base produces a blank page on the bare hostname, which
+  // is exactly what a subpath build looks like when it is served at a root.
+  base: '/',
   build: {
     outDir: 'dist',
     assetsInlineLimit: 0,
