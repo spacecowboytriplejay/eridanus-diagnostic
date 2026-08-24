@@ -1,26 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-ZA">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-  <title>Eridanus Capital Diagnostic | Cobus Nel</title>
-  <meta name="description" content="Find out what your capital is actually doing. The Eridanus Capital Diagnostic shows South African investors with R1M+ where their capital gap is. Powered by the HALO Asset Framework." />
-  <meta name="robots" content="index, follow" />
+  <!-- No maximum-scale: it blocks pinch-zoom, which is an accessibility
+       failure and a Lighthouse flag on a page most people open on a phone. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0A0A0A" />
+
+  <title>Capital Diagnostic | Cobus Nel</title>
+  <meta name="description" content="One slider, sixty seconds: the gap between what your capital earns and what inflation and tax take back. Cobus Nel, CA(SA), CIO of Eridanus. FSP 48947." />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://cobusnel.com/calculator" />
+
+  <!-- ── Icons ──────────────────────────────────────────────────────────
+       Note: Google shows ONE favicon per hostname, taken from the site's
+       home page. These tags give browser tabs the right icon, but the
+       search-result icon for cobusnel.com comes from the ROOT site's
+       <head>. See ROOT-SITE-HEAD.html.
+       ─────────────────────────────────────────────────────────────────── -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- ── Sharing ────────────────────────────────────────────────────── -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Eridanus Capital Diagnostic | Cobus Nel" />
-  <meta property="og:description" content="Your capital is working. The question is: for whom? Run the free diagnostic to see your capital gap." />
-  <meta property="og:image" content="https://files.manuscdn.com/user_upload_by_module/session_file/310519663766167215/rhUIfCWTeaOjkWeM.jpg" />
+  <meta property="og:site_name" content="Cobus Nel" />
   <meta property="og:locale" content="en_ZA" />
+  <meta property="og:title" content="Your capital is working. For whom?" />
+  <meta property="og:description" content="The Eridanus Capital Diagnostic. One slider, sixty seconds, and the number most South African investors have never actually been shown." />
+  <meta property="og:url" content="https://cobusnel.com/calculator" />
+  <meta property="og:image" content="https://cobusnel.com/calculator/og-calculator.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Cobus Nel standing in a maize field. The Eridanus Capital Diagnostic." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Eridanus Capital Diagnostic | Cobus Nel" />
-  <meta name="twitter:description" content="Your capital is working. The question is: for whom?" />
-  <meta name="twitter:image" content="https://files.manuscdn.com/user_upload_by_module/session_file/310519663766167215/rhUIfCWTeaOjkWeM.jpg" />
+  <meta name="twitter:title" content="Your capital is working. For whom?" />
+  <meta name="twitter:description" content="The Eridanus Capital Diagnostic. One slider, sixty seconds." />
+  <meta name="twitter:image" content="https://cobusnel.com/calculator/og-calculator.jpg" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="preload" as="image" href="/cobus-nel-portrait.jpg" />
+  <link rel="preload" as="image" href="/cobus-nel-field.jpg" />
+
+  <!-- ── Structured data ────────────────────────────────────────────────
+       Every claim here is also visible on the page, which is what Google's
+       structured-data policy requires. Do not add anything the page does
+       not say out loud.
+       ─────────────────────────────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://cobusnel.com/calculator#webpage",
+        "url": "https://cobusnel.com/calculator",
+        "name": "Capital Diagnostic | Cobus Nel",
+        "description": "A capital efficiency diagnostic for South African investors with R1 million or more.",
+        "inLanguage": "en-ZA",
+        "isPartOf": { "@id": "https://cobusnel.com/#website" },
+        "about": { "@id": "https://cobusnel.com/#person" },
+        "primaryImageOfPage": "https://cobusnel.com/calculator/og-calculator.jpg"
+      },
+      {
+        "@type": "WebApplication",
+        "name": "Eridanus Capital Diagnostic",
+        "url": "https://cobusnel.com/calculator",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "description": "Estimates annual capital leakage from inflation and tax drag against how capital is currently held, and returns a capital efficiency score.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "ZAR" },
+        "author": { "@id": "https://cobusnel.com/#person" }
+      }
+    ]
+  }
+  </script>
+
+  <!-- ────────────────────────────────────────────────────────────────────
+       META PIXEL — REPLACE 'YOUR_PIXEL_ID' WITH COBUS NEL'S OWN DATASET ID.
+       Do NOT reuse the FR Plus dataset (FR-PLUS-JULY 2026-INVESTORS /
+       1518029050096887). Two brands on one pixel corrupts both audiences.
+       PageView fires here; Lead fires on form submit inside main.js.
+       ──────────────────────────────────────────────────────────────────── -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    // fbq('init', 'YOUR_PIXEL_ID');
+    // fbq('track', 'PageView');
+  </script>
+
+  <!-- GOOGLE ANALYTICS 4 — replace G-XXXXXXXXXX, then uncomment.
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+  -->
 </head>
 <body>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&amp;ev=PageView&amp;noscript=1" alt="" /></noscript>
+
   <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/main.js"></script>
 </body>
 </html>

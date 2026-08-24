@@ -1,0 +1,151 @@
+<!--
+════════════════════════════════════════════════════════════════════════════
+  PASTE THIS INTO THE <head> OF THE cobusnel.com HOME PAGE.
+  This is NOT for the calculator repo. It belongs to the main site.
+
+  Why: Google shows one favicon per hostname and takes it from the home
+  page. cobusnel.com currently declares no favicon at all, which is why the
+  search result shows a generic globe. Nothing you add under /calculator
+  can fix that; Google does not read favicons from subdirectories.
+
+  Upload these files to the ROOT of cobusnel.com first, so they resolve at
+  https://cobusnel.com/favicon.ico and so on. They are in brand-assets/:
+
+    favicon.ico              multi-resolution: 16/24/32/48/64/128/256
+    favicon.svg              vector, for browsers that prefer it
+    apple-touch-icon.png     180x180, opaque
+    icon-192.png
+    icon-512.png
+    icon-512-maskable.png    Android adaptive, 40% safe zone
+    site.webmanifest
+    og-cobusnel.jpg          1200x630 share card
+
+  Then confirm robots.txt blocks neither Googlebot nor Googlebot-Image from
+  the home page or the icons, and request indexing on the home page in
+  Search Console. Google takes several days to several weeks to refresh a
+  favicon.
+════════════════════════════════════════════════════════════════════════════
+-->
+
+<!-- ── Icons ──────────────────────────────────────────────────────────── -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0A0A0A">
+
+<!-- ── Title and description ──────────────────────────────────────────
+     The current description is 197 characters. Google is already ignoring
+     it and writing its own snippet from body copy, which is what the
+     truncated "… tax-efficient structures" in the live result is. This one
+     is 143 characters, inside the ~155 Google will render, and it leads
+     with the two facts that separate him from every other adviser: the
+     CA(SA) and the FSP number.
+     ─────────────────────────────────────────────────────────────────── -->
+<title>Cobus Nel | South Africa's Capital Architect</title>
+<meta name="description" content="Cobus Nel, CA(SA), is Chief Investment Officer of Eridanus (FSP 48947), acquiring real South African agricultural assets at below-market value.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<link rel="canonical" href="https://cobusnel.com/">
+
+<!-- ── Sharing ────────────────────────────────────────────────────────── -->
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Cobus Nel">
+<meta property="og:locale" content="en_ZA">
+<meta property="og:title" content="Cobus Nel | South Africa's Capital Architect">
+<meta property="og:description" content="CA(SA). Chief Investment Officer of Eridanus, an FSCA-authorised Financial Services Provider (FSP 48947).">
+<meta property="og:url" content="https://cobusnel.com/">
+<meta property="og:image" content="https://cobusnel.com/og-cobusnel.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cobus Nel, South Africa's Capital Architect. CA(SA), CIO of Eridanus.">
+<meta property="profile:first_name" content="Cobus">
+<meta property="profile:last_name" content="Nel">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cobus Nel | South Africa's Capital Architect">
+<meta name="twitter:description" content="CA(SA). Chief Investment Officer of Eridanus (FSP 48947).">
+<meta name="twitter:image" content="https://cobusnel.com/og-cobusnel.jpg">
+
+<!-- ── Structured data ─────────────────────────────────────────────────
+     This is the block that decides how ChatGPT, Perplexity, Gemini and
+     Google's AI surfaces describe him. Without it they guess from prose.
+     With it they get the entity, the role, the regulator and the licence
+     number as facts.
+
+     Every statement below is already visible on the site, which is what
+     Google's structured-data policy requires. Do not add a claim the page
+     does not make out loud.
+
+     >>> BEFORE SHIPPING: fill in or DELETE the two placeholder sameAs
+     URLs. A wrong URL is worse than a missing one.
+     ─────────────────────────────────────────────────────────────────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://cobusnel.com/#website",
+      "url": "https://cobusnel.com/",
+      "name": "Cobus Nel",
+      "inLanguage": "en-ZA",
+      "publisher": { "@id": "https://cobusnel.com/#person" }
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": "https://cobusnel.com/#webpage",
+      "url": "https://cobusnel.com/",
+      "name": "Cobus Nel | South Africa's Capital Architect",
+      "isPartOf": { "@id": "https://cobusnel.com/#website" },
+      "mainEntity": { "@id": "https://cobusnel.com/#person" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://cobusnel.com/#person",
+      "name": "Cobus Nel",
+      "givenName": "Cobus",
+      "familyName": "Nel",
+      "honorificSuffix": "CA(SA)",
+      "jobTitle": "Chief Investment Officer",
+      "description": "Chartered accountant and investment operator. Chief Investment Officer of Eridanus, acquiring real South African agricultural assets at below-market value.",
+      "url": "https://cobusnel.com/",
+      "image": "https://cobusnel.com/og-cobusnel.jpg",
+      "worksFor": { "@id": "https://cobusnel.com/#eridanus" },
+      "knowsAbout": [
+        "Agricultural investment",
+        "Capital allocation",
+        "Venture capital company structures",
+        "Commodity trading",
+        "Business rescue"
+      ],
+      "nationality": { "@type": "Country", "name": "South Africa" },
+      "sameAs": [
+        "https://www.instagram.com/cobusxnel/"
+      ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://cobusnel.com/#eridanus",
+      "name": "Eridanus",
+      "description": "FSCA-authorised Financial Services Provider acquiring real South African agricultural assets at below-market value. Operating since 2018.",
+      "foundingDate": "2018",
+      "areaServed": { "@type": "Country", "name": "South Africa" },
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "FSCA Financial Services Provider number",
+        "value": "FSP 48947"
+      },
+      "employee": { "@id": "https://cobusnel.com/#person" }
+    }
+  ]
+}
+</script>
+
+<!--
+  TODO before shipping, add to the Person "sameAs" array:
+    "https://www.linkedin.com/in/<his-handle>",
+    "https://www.youtube.com/@<his-channel>"
+  sameAs is how an AI assistant confirms that the Cobus Nel on LinkedIn, the
+  one on YouTube and the one on this site are one entity. It is the single
+  highest-leverage line in this whole block for AI-search visibility, and it
+  is the one I cannot fill in for you without guessing.
+-->
