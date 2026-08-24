@@ -843,7 +843,7 @@ function renderFinalCTA() {
 // PASTE THE SAME GOOGLE APPS SCRIPT WEB APP URL USED ON cobusnel.com/apply
 // (see APPS_SCRIPT_for_Google_Sheet.gs from the earlier fix). Same sheet,
 // two entry points, distinguished by the "source" field on each row.
-const SHEET_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbwzQqlrKSr-ULvmZCuS2_AEvabK_PhchIBjGXphR7ARPO_P4vca289Q-iKpRAGc66oJKg/exec';
+const SHEET_ENDPOINT_URL = 'PASTE_APPS_SCRIPT_URL_HERE';
 
 // Capture ad attribution from the URL so each lead row shows which ad produced it.
 const LEAD_ATTRIBUTION = (function () {
