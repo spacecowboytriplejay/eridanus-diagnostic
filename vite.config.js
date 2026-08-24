@@ -5,7 +5,7 @@ export default defineConfig({
   // site. The base makes every emitted asset URL /calculator/... so the
   // proxy catches them. Set this back to '/' only if the page ever moves
   // to its own hostname.
-  base: '/',
+  base: '/calculator/',
   build: {
     outDir: 'dist',
     assetsInlineLimit: 0,
