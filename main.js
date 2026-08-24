@@ -223,6 +223,15 @@ function observeFadeIns() {
 
 // ── SVG Arrow ───────────────────────────────────────────────────────────────
 const ARROW_SVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+// Sits under every primary CTA. Three objections killed in one line:
+// how long, what it costs, what it commits you to.
+const REASSURE = (align = 'left') => `
+  <p style="font-size:11px;color:var(--text-3);letter-spacing:0.04em;margin-top:0.875rem;text-align:${align};display:flex;gap:0.6rem;flex-wrap:wrap;${align === 'center' ? 'justify-content:center;' : ''}">
+    <span>Under 60 seconds</span><span style="opacity:0.4;">/</span>
+    <span>No cost</span><span style="opacity:0.4;">/</span>
+    <span>No obligation</span>
+  </p>`;
+
 const CHEVRON_DOWN = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
 
 // ── Render ───────────────────────────────────────────────────────────────────
@@ -243,9 +252,11 @@ function render() {
     ${renderFinalCTA()}
     ${renderLeadForm()}
     ${renderFooter()}
+    ${renderStickyCTA()}
   `;
 
   observeFadeIns();
+  initStickyCTA();
   initDiagnostic();
   initFloatingParticles();
   initLeadForm();
@@ -258,8 +269,9 @@ function renderNav() {
   <nav style="position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;transition:background 300ms,backdrop-filter 300ms;" id="nav">
     <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
       <span style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--text);letter-spacing:0.02em;">Cobus Nel</span>
-      <div style="display:flex;align-items:center;gap:2rem;">
-        <a href="${APPLY_URL}" class="btn-primary" style="font-size:12px;padding:10px 20px;">Apply Now ${ARROW_SVG}</a>
+      <div style="display:flex;align-items:center;gap:1.25rem;">
+        <span class="figure hide-mobile" style="font-size:11px;border:1px solid var(--gold-border);border-radius:100px;padding:6px 14px;letter-spacing:0.06em;">FSP 48947</span>
+        <a href="${APPLY_URL}" class="btn-primary" style="font-size:12px;padding:10px 20px;">Get My Free Projection ${ARROW_SVG}</a>
       </div>
     </div>
   </nav>`;
@@ -291,12 +303,14 @@ function renderHero() {
           </div>
           <div class="fade-in" style="transition-delay:160ms;">
             <p style="font-size:17px;max-width:460px;margin-bottom:2.5rem;line-height:1.8;">
-              Most South African investors with R1 million or more are unknowingly leaving capital on the table. The diagnostic below shows you exactly where. The Discovery Session shows you what to do about it.
+              Most South African investors with R1 million or more are unknowingly leaving capital on the table. Get a free projection built against the position you actually hold, or run the diagnostic below first and see the gap for yourself.
             </p>
           </div>
           <div class="fade-in" style="transition-delay:240ms;display:flex;gap:1rem;flex-wrap:wrap;">
-            <a href="#diagnostic" class="btn-primary">Run My Diagnostic ${ARROW_SVG}</a>
+            <a href="${APPLY_URL}" class="btn-primary">Get My Free Projection ${ARROW_SVG}</a>
+            <a href="#diagnostic" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--text-2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:2px;align-self:center;transition:color 200ms,border-color 200ms;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold-border)'" onmouseout="this.style.color='var(--text-2)';this.style.borderColor='var(--border)'">Or see where it sits first &darr;</a>
           </div>
+          ${REASSURE('left')}
           <div class="fade-in" style="transition-delay:320ms;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;gap:2.5rem;flex-wrap:wrap;">
             ${[
               { fig: 'FSP 48947', label: 'FSCA Authorised' },
@@ -468,7 +482,7 @@ function renderDiagnostic() {
             ${CAPITAL_STEPS.map((s, i) => `<span id="step-label-${i}" style="font-size:10px;color:var(--text-3);letter-spacing:0.06em;transition:color 200ms;">${s.label}</span>`).join('')}
           </div>
           <div id="below-floor-msg" style="display:none;font-size:12px;color:var(--red);margin-top:0.75rem;">
-            The Discovery Session capital floor is R1 million.
+            Projections start at a R1 million capital position.
           </div>
         </div>
 
@@ -532,14 +546,15 @@ function renderDiagnostic() {
           <!-- Gated CTA -->
           <div style="background:var(--gold-dim);border:1px solid var(--gold-border);padding:2rem;text-align:center;">
             <h3 style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--text);margin-bottom:0.75rem;line-height:1.3;">
-              To see what your capital could look like inside a HALO asset structure, apply for a Discovery Session.
+              That number is a generic estimate. Yours is not.
             </h3>
             <p style="font-size:13px;margin-bottom:1.5rem;max-width:480px;margin-left:auto;margin-right:auto;">
-              The diagnostic shows the gap. The Discovery Session shows you the structure. One session. Seven touchpoints. No obligation. Capital floor: R1 million.
+              The slider works off public rates and averages. A custom projection works off your actual position: what you hold, where it sits, and what a HALO structure would do with it. Takes 60 seconds to request. Capital floor: R1 million.
             </p>
             <a href="${APPLY_URL}" class="btn-primary" style="font-size:15px;padding:16px 36px;">
-              Apply for a Discovery Session ${ARROW_SVG}
+              Get My Free Projection ${ARROW_SVG}
             </a>
+            ${REASSURE('center')}
           </div>
         </div>
       </div>
@@ -576,7 +591,7 @@ function renderHALO() {
 
       <div class="fade-in" style="text-align:center;margin-top:3rem;">
         <a href="${APPLY_URL}" class="btn-primary">
-          Apply for a Discovery Session ${ARROW_SVG}
+          Get My Free Projection ${ARROW_SVG}
         </a>
       </div>
     </div>
@@ -622,7 +637,7 @@ function renderCaseStudies() {
 
       <div class="fade-in" style="text-align:center;margin-top:3rem;">
         <a href="${APPLY_URL}" class="btn-primary">
-          Apply for a Discovery Session ${ARROW_SVG}
+          Get My Free Projection ${ARROW_SVG}
         </a>
       </div>
     </div>
@@ -801,9 +816,9 @@ function renderFinalCTA() {
     <div class="container" style="position:relative;z-index:2;text-align:center;max-width:660px;">
       <div class="fade-in">
         <div class="gold-line" style="margin:0 auto 1.5rem;"></div>
-        <h2 class="headline" style="margin-bottom:1.5rem;">Your capital deserves a real conversation.</h2>
+        <h2 class="headline" style="margin-bottom:1.5rem;">See your number, not the average.</h2>
         <p style="font-size:16px;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto;">
-          The diagnostic shows the gap. The Discovery Session shows you the structure. Apply to qualify. Capital floor: R1 million.
+          The diagnostic shows you the gap in general terms. A custom projection shows you yours, built on the position you actually hold. Capital floor: R1 million.
         </p>
         <div style="display:flex;align-items:center;justify-content:center;gap:2rem;margin-bottom:2.5rem;flex-wrap:wrap;">
           ${[
@@ -814,7 +829,7 @@ function renderFinalCTA() {
           ].map(l => `<img src="${l.src}" alt="${l.alt}" style="height:${l.h};width:auto;object-fit:contain;opacity:0.3;" loading="lazy"/>`).join('')}
         </div>
         <a href="${APPLY_URL}" class="btn-primary" style="font-size:15px;padding:18px 44px;">
-          Apply for a Discovery Session ${ARROW_SVG}
+          Get My Free Projection ${ARROW_SVG}
         </a>
         <p style="font-size:11px;color:var(--text-3);margin-top:2rem;line-height:1.65;">
           Eridanus is an authorised Financial Services Provider (FSP 48947). Returns are not guaranteed. All investments carry risk. This is not financial advice.
@@ -835,13 +850,13 @@ function renderLeadForm() {
   <section id="lead-form-section" class="section" style="background:var(--bg-2);border-top:1px solid var(--border);">
     <div class="container" style="max-width:560px;">
       <div class="fade-in" style="text-align:center;margin-bottom:2.5rem;">
-        <span class="eyebrow">See Where You Stand</span>
-        <h2 class="headline" style="margin-bottom:1rem;">See what your capital could keep.</h2>
-        <p style="font-size:15px;">Drop your details and Cobus will come back with a plain, personalised picture of what the HALO framework would mean for your capital. No obligation, no pressure.</p>
+        <span class="eyebrow">Your Numbers, Not The Average</span>
+        <h2 class="headline" style="margin-bottom:1rem;">Get your free projection.</h2>
+        <p style="font-size:15px;">Cobus builds it against your actual position and comes back with a plain, personalised picture of what a HALO structure would mean for your capital. No obligation, no pressure.</p>
       </div>
 
       <div class="fade-in" style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:2.25rem;">
-        <p style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.5rem;">Step 1 of 1 · 60 seconds</p>
+        <p style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.5rem;">5 questions · Under 60 seconds · No cost</p>
 
         <form id="lead-form" novalidate>
           <div style="display:grid;gap:1rem;margin-bottom:1rem;">
@@ -887,14 +902,14 @@ function renderLeadForm() {
           </label>
 
           <button type="submit" id="lf-submit" class="btn-primary" style="width:100%;justify-content:center;">
-            Get my projection ${ARROW_SVG}
+            Get My Free Projection ${ARROW_SVG}
           </button>
           <p style="font-size:11px;color:var(--text-3);text-align:center;margin-top:1rem;">No spam. Your information stays with Cobus Nel.</p>
         </form>
 
         <div id="lf-success" style="display:none;text-align:center;padding:1rem 0;">
-          <p style="font-family:var(--serif);font-size:20px;color:var(--gold);margin-bottom:0.5rem;">You're in. Projection on the way.</p>
-          <p style="font-size:14px;color:var(--text-2);">Thank you. Cobus has your details and will be in touch shortly with your personalised picture.</p>
+          <p style="font-family:var(--serif);font-size:20px;color:var(--gold);margin-bottom:0.5rem;">Request received. Your projection is being built.</p>
+          <p style="font-size:14px;color:var(--text-2);">Cobus has your details and will come back with your custom projection shortly.</p>
         </div>
       </div>
     </div>
@@ -947,7 +962,7 @@ function initLeadForm() {
 
     const restore = () => {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = `Get my projection ${ARROW_SVG}`;
+      submitBtn.innerHTML = `Get My Free Projection ${ARROW_SVG}`;
     };
 
     submitBtn.textContent = 'Sending...';
@@ -997,6 +1012,34 @@ function initLeadForm() {
     }
     el.textContent = msg;
   }
+}
+
+// ── STICKY MOBILE CTA ─────────────────────────────────────────────────────────
+// Phone-only. On a page this long every CTA is off-screen for most of the
+// scroll, and paid social traffic is overwhelmingly mobile. Appears once the
+// hero is behind you, hides again over the form so it never covers the fields.
+function renderStickyCTA() {
+  return `
+  <div id="sticky-cta">
+    <div>
+      <p id="sticky-cta-label">Free projection</p>
+      <p id="sticky-cta-sub">Under 60 seconds</p>
+    </div>
+    <a href="${APPLY_URL}" class="btn-primary" style="font-size:13px;padding:12px 20px;white-space:nowrap;">Get Mine ${ARROW_SVG}</a>
+  </div>`;
+}
+
+function initStickyCTA() {
+  const bar = document.getElementById('sticky-cta');
+  const form = document.getElementById('lead-form-section');
+  if (!bar || !form) return;
+  const show = () => {
+    const pastHero = window.scrollY > window.innerHeight * 0.9;
+    const atForm = form.getBoundingClientRect().top < window.innerHeight * 0.9;
+    bar.classList.toggle('visible', pastHero && !atForm);
+  };
+  window.addEventListener('scroll', show, { passive: true });
+  show();
 }
 
 // ── FOOTER ────────────────────────────────────────────────────────────────────
