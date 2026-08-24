@@ -845,6 +845,22 @@ function renderFinalCTA() {
 // two entry points, distinguished by the "source" field on each row.
 const SHEET_ENDPOINT_URL = 'PASTE_APPS_SCRIPT_URL_HERE';
 
+// Capture ad attribution from the URL so each lead row shows which ad produced it.
+const LEAD_ATTRIBUTION = (function () {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    return {
+      utm_source: p.get('utm_source') || '',
+      utm_medium: p.get('utm_medium') || '',
+      utm_campaign: p.get('utm_campaign') || '',
+      utm_content: p.get('utm_content') || '',
+      utm_term: p.get('utm_term') || '',
+      fbclid: p.get('fbclid') || '',
+      landing_url: window.location.href,
+    };
+  } catch (e) { return {}; }
+})();
+
 function renderLeadForm() {
   return `
   <section id="lead-form-section" class="section" style="background:var(--bg-2);border-top:1px solid var(--border);">
@@ -985,6 +1001,7 @@ function initLeadForm() {
           province: fields.province,
           source: 'eridanus-diagnostic (calculator form)',
           submittedAt: new Date().toISOString(),
+          ...LEAD_ATTRIBUTION,
         }),
       });
     } catch (err) {
