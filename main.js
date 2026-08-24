@@ -843,7 +843,7 @@ function renderFinalCTA() {
 // PASTE THE SAME GOOGLE APPS SCRIPT WEB APP URL USED ON cobusnel.com/apply
 // (see APPS_SCRIPT_for_Google_Sheet.gs from the earlier fix). Same sheet,
 // two entry points, distinguished by the "source" field on each row.
-const SHEET_ENDPOINT_URL = 'PASTE_APPS_SCRIPT_URL_HERE';
+const SHEET_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbwzQqlrKSr-ULvmZCuS2_AEvabK_PhchIBjGXphR7ARPO_P4vca289Q-iKpRAGc66oJKg/exec';
 
 // Capture ad attribution from the URL so each lead row shows which ad produced it.
 const LEAD_ATTRIBUTION = (function () {
@@ -984,6 +984,18 @@ function initLeadForm() {
     submitBtn.textContent = 'Sending...';
     submitBtn.disabled = true;
 
+    // Fire the Lead pixel event on the user's successful submit action, BEFORE the
+    // opaque no-cors fetch. This guarantees Meta receives the conversion signal even
+    // if the sheet request is slow or the response is unreadable. Retry once if fbq
+    // hasn't finished loading yet.
+    (function fireLead(attempt) {
+      if (typeof fbq === 'function') {
+        fbq('track', 'Lead', { content_name: 'Calculator Projection Request' });
+      } else if (attempt < 10) {
+        setTimeout(function () { fireLead(attempt + 1); }, 300);
+      }
+    })(0);
+
     try {
       // no-cors means the response is opaque: a non-2xx from Apps Script is
       // indistinguishable from success here. Verify delivery in the sheet,
@@ -1009,10 +1021,6 @@ function initLeadForm() {
       restore();
       showFormError('That did not send. Check your connection and try once more.');
       return;
-    }
-
-    if (typeof fbq === 'function') {
-      fbq('track', 'Lead', { content_name: 'Calculator Projection Request' });
     }
 
     form.style.display = 'none';
