@@ -117,3 +117,50 @@ citations are what make them believe it.
 
 - [Define a favicon to show in search results — Google Search Central](https://developers.google.com/search/docs/appearance/favicon-in-search)
 - [General structured data guidelines — Google Search Central](https://developers.google.com/search/docs/appearance/structured-data/sd-policies)
+
+---
+
+# UPDATE, later on 24 Aug: the CDN failure is no longer hypothetical
+
+Earlier today I flagged that the four "As Seen On" logos and the OG image were
+hosted on `files.manuscdn.com`, a third-party session CDN, and that if it
+expired the trust row would go blank on a live page with no alert.
+
+It has expired. The live cobusnel.com now shows four broken-image icons where
+kykNET, Ontbyt Sake, Pretoria FM and EY should be, and the hero portrait is
+gone. `files.manuscdn.com` is also the only image host in the home page's
+`<head>`, so the share card is dead too.
+
+**Do not run paid traffic to the site in this state.** The entire credibility
+argument on that page is the regulator number plus the media logos. Broken
+images where the media logos should be reads as an abandoned site, and this
+audience is being asked to consider moving R1m+.
+
+## Fixed here
+
+The calculator no longer depends on any external host. The four logos were
+rebuilt from the originals in
+`Desktop/Cobus Nel June:July Campaign /Cobus Website logos ` and converted to
+white-on-transparent PNGs, now in `public/logos/`. Note the old code applied
+`filter: brightness(0) invert(1)` to force them white, which only works on a
+transparent source. Three of the four originals have solid backgrounds, so
+even once the CDN is restored that filter would have rendered them as white
+rectangles. The new files are already white with a real alpha channel and the
+filter has been removed.
+
+## Still to fix on the ROOT site
+
+`brand-assets/` now also contains:
+
+    logos/kyknet.png, ontbytsake.png, pretoria-fm.png, ey.png
+    cobus-nel-portrait.jpg      (the hero portrait)
+    cobus-nel-field.jpg
+
+Upload these to the cobusnel.com repo and repoint every
+`files.manuscdn.com` reference at the local copies. Search the repo for
+`manuscdn` and expect to find the hero image, the four logos and the
+`og:image` meta tag. There should be zero matches when you are done.
+
+Rule going forward: **nothing on a page that takes paid traffic loads from a
+host you do not control.** Fonts from Google are the one accepted exception,
+and even those have a local fallback stack.

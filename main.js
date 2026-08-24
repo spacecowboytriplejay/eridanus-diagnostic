@@ -1,5 +1,7 @@
 import './style.css';
 
+const BASE = import.meta.env.BASE_URL;
+
 // ── Asset URLs ──────────────────────────────────────────────────────────────
 // The two architect photos are served from /public, not a third-party CDN.
 // PORTRAIT = studio, black suit, boardroom. FIELD = Eridanus polo, boots,
@@ -10,14 +12,15 @@ import './style.css';
 const COBUS_PORTRAIT = `${import.meta.env.BASE_URL}cobus-nel-portrait.jpg`;
 const COBUS_FIELD = `${import.meta.env.BASE_URL}cobus-nel-field.jpg`;
 
-// WARNING: the four logos below sit on files.manuscdn.com, a third-party
-// session CDN. If that link expires the entire "As Seen On" trust row goes
-// blank on a live paid-traffic page and nobody gets an alert. Download them
-// and move them into /public alongside the photos.
-const LOGO_KYKNET = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663766167215/WWKlZfcTfPTrnvWl.png';
-const LOGO_ONTBYT = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663766167215/UyOVDuntQbidIfCZ.png';
-const LOGO_PRETORIA_FM = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663766167215/WUnIpufjtRKprHES.png';
-const LOGO_EY = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663766167215/peICczlbTSWeWKgX.png';
+// The four "As Seen On" logos, self-hosted. These previously pointed at
+// files.manuscdn.com, a third-party session CDN. That CDN has since expired
+// and took the whole trust row down on the live site with no alert. They are
+// now real files in /public/logos, converted to white-on-transparent from the
+// originals in the campaign folder, so nothing external can break them again.
+const LOGO_KYKNET = BASE + 'logos/kyknet.png';
+const LOGO_ONTBYT = BASE + 'logos/ontbytsake.png';
+const LOGO_PRETORIA_FM = BASE + 'logos/pretoria-fm.png';
+const LOGO_EY = BASE + 'logos/ey.png';
 const APPLY_URL = 'https://cobusnel.com/apply';
 
 // ── Data ────────────────────────────────────────────────────────────────────
@@ -368,7 +371,7 @@ function renderLogos() {
       <div style="display:flex;align-items:center;justify-content:center;gap:clamp(2rem,5vw,4rem);flex-wrap:wrap;">
         ${logos.map(l => `
           <div class="logo-accent" style="opacity:0.45;transition:opacity 250ms;position:relative;padding-bottom:8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.45'">
-            <img src="${l.src}" alt="${l.alt}" style="height:${l.h};width:auto;max-width:130px;object-fit:contain;filter:brightness(0) invert(1);" loading="lazy"/>
+            <img src="${l.src}" alt="${l.alt}" style="height:${l.h};width:auto;max-width:130px;object-fit:contain;" loading="lazy"/>
           </div>
         `).join('')}
       </div>
@@ -810,7 +813,7 @@ function renderFinalCTA() {
             { src: LOGO_ONTBYT, alt: 'Ontbyt Sake', h: '24px' },
             { src: LOGO_PRETORIA_FM, alt: 'Pretoria FM', h: '26px' },
             { src: LOGO_EY, alt: 'EY', h: '20px' },
-          ].map(l => `<img src="${l.src}" alt="${l.alt}" style="height:${l.h};width:auto;object-fit:contain;opacity:0.3;filter:brightness(0) invert(1);" loading="lazy"/>`).join('')}
+          ].map(l => `<img src="${l.src}" alt="${l.alt}" style="height:${l.h};width:auto;object-fit:contain;opacity:0.3;" loading="lazy"/>`).join('')}
         </div>
         <a href="${APPLY_URL}" target="_blank" rel="noopener" class="btn-primary" style="font-size:15px;padding:18px 44px;">
           Apply for a Discovery Session ${ARROW_SVG}
