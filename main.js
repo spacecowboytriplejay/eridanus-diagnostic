@@ -879,7 +879,7 @@ function renderLeadForm() {
             <div>
               <input type="text" id="lf-name" placeholder="Full name *" required
                 style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;border-radius:6px;"/>
-              <p id="lf-err-name" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Required</p>
+              <p id="lf-err-name" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Please enter your full name</p>
             </div>
             <div>
               <input type="email" id="lf-email" placeholder="Email *" required
@@ -889,7 +889,7 @@ function renderLeadForm() {
             <div>
               <input type="tel" id="lf-phone" placeholder="Mobile *" required
                 style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;border-radius:6px;"/>
-              <p id="lf-err-phone" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Required</p>
+              <p id="lf-err-phone" style="font-size:11px;color:var(--red);margin-top:4px;display:none;">Enter a valid SA mobile number (e.g. 082 123 4567)</p>
             </div>
             <div>
               <select id="lf-capital" required
@@ -950,16 +950,45 @@ function initLeadForm() {
     };
 
     let valid = true;
-    const showErr = (id, show) => { document.getElementById(id).style.display = show ? 'block' : 'none'; };
-    showErr('lf-err-name', !fields.name); if (!fields.name) valid = false;
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email);
+    const showErr = (id, show) => { const el = document.getElementById(id); if (el) el.style.display = show ? 'block' : 'none'; };
+
+    // ── NAME: require a real full name (2+ words, letters, no obvious junk) ──
+    var nameClean = fields.name.replace(/\s+/g, ' ').trim();
+    var nameParts = nameClean.split(' ').filter(function (p) { return p.length > 0; });
+    var junkName = /^(.)\1+$/.test(nameClean.replace(/\s/g, '')) ||   // aaaa, xxxx
+                   /^(asdf|qwer|test|abc|xyz)/i.test(nameClean) ||
+                   !/[a-zA-Z]/.test(nameClean);                          // must contain letters
+    var nameOk = nameParts.length >= 2 && nameParts.every(function (p) { return p.length >= 2; }) && !junkName;
+    showErr('lf-err-name', !nameOk); if (!nameOk) valid = false;
+
+    // ── EMAIL: valid format + block throwaway/disposable domains ──
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(fields.email);
+    var badDomains = ['mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com','trashmail.com','yopmail.com','test.com','example.com','fake.com','asdf.com'];
+    var emailDomain = (fields.email.split('@')[1] || '').toLowerCase();
+    if (badDomains.indexOf(emailDomain) !== -1) emailOk = false;
+    if (/^(test|fake|asdf|noreply|none)@/i.test(fields.email)) emailOk = false;
     showErr('lf-err-email', !emailOk); if (!emailOk) valid = false;
-    showErr('lf-err-phone', !fields.phone); if (!fields.phone) valid = false;
+
+    // ── PHONE: valid SA mobile; reject junk, repeats, sequences ──
+    var digits = fields.phone.replace(/[^0-9+]/g, '');
+    var national = digits.replace(/^\+?27/, '0');           // +27... -> 0...
+    national = national.replace(/[^0-9]/g, '');
+    var phoneOk = /^0[6-8][0-9]{8}$/.test(national);          // 10 digits, 06/07/08 start
+    if (phoneOk) {
+      var body = national;
+      if (/^(.)\1+$/.test(body)) phoneOk = false;            // 0000000000, 0111111111
+      if (/0123456789|1234567890|0987654321/.test(body)) phoneOk = false; // sequences
+    }
+    showErr('lf-err-phone', !phoneOk); if (!phoneOk) valid = false;
+
     showErr('lf-err-capital', !fields.capital); if (!fields.capital) valid = false;
     showErr('lf-err-province', !fields.province); if (!fields.province) valid = false;
     if (!fields.consent) valid = false;
 
     if (!valid) return;
+
+    // normalise phone to national format before sending
+    fields.phone = national;
 
     // ── HARD GATE ────────────────────────────────────────────────────────
     // Previously the page showed "You're in" whether or not the lead was
