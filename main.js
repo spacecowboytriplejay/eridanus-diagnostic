@@ -988,7 +988,7 @@ function initLeadForm() {
     if (!valid) return;
 
     // normalise phone to national format before sending
-    fields.phone = national;
+    fields.phone = '+27' + national.slice(1);
 
     // ── HARD GATE ────────────────────────────────────────────────────────
     // Previously the page showed "You're in" whether or not the lead was
