@@ -977,7 +977,7 @@ function initLeadForm() {
     if (phoneOk) {
       var body = national;
       if (/^(.)\1+$/.test(body)) phoneOk = false;            // 0000000000, 0111111111
-      if (/0123456789|1234567890|0987654321/.test(body)) phoneOk = false; // sequences
+      if (/0123456789|1234567890|0987654321|(\d)\1{5,}/.test(body)) phoneOk = false; // sequences + repeats
     }
     showErr('lf-err-phone', !phoneOk); if (!phoneOk) valid = false;
 
