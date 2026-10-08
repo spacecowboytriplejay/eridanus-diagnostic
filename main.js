@@ -1105,7 +1105,7 @@ function renderFooter() {
         <div>
           <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--text);margin-bottom:1rem;">Cobus Nel</div>
           <p style="font-size:13px;max-width:260px;margin-bottom:1rem;">South Africa's Capital Architect. CA(SA). Also involved in running Eridanus Ltd.</p>
-          <p style="font-size:11px;color:var(--text-3);">Also involved in running Eridanus Ltd</p>
+          <p style="font-size:11px;color:var(--text-3);">Eridanus Ltd | Since 2018</p>
         </div>
         <div>
           <p style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.25rem;">Legal</p>
