@@ -282,7 +282,7 @@ function renderHero() {
           </div>
           <div class="fade-in" style="transition-delay:320ms;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;gap:2.5rem;flex-wrap:wrap;">
             ${[
-              { fig: 'FSP 48947', label: 'FSCA Authorised' },
+              { fig: 'Eridanus Ltd', label: 'Also Involved In Running' },
               { fig: 'CA(SA)', label: 'Qualified Management' },
               { fig: '2018', label: 'Operating Since' },
             ].map(item => `
@@ -576,7 +576,7 @@ function renderCaseStudies() {
         <span class="eyebrow">Investors Who Have Seen the Number</span>
         <h2 class="headline" style="margin-bottom:1rem;">Who Eridanus is built for.</h2>
         <p style="max-width:520px;margin:0 auto;font-size:16px;">
-          Representative profiles based on the investors Cobus works with. Names and identifying details are withheld by design.
+          Composite profiles based on the investors Cobus works with. Names and identifying details are withheld by design.
         </p>
       </div>
 
@@ -685,7 +685,7 @@ function renderOperator() {
               Cobus Nel trained at Ernst and Young in Pretoria and Bermuda, passed all CA(SA) board exams first time, and traded commodities at Export Trading Group. He has hands-on farming experience and has navigated business rescues and liquidations.
             </p>
             <p style="margin-bottom:2rem;font-size:15px;">
-              He co-founded Eridanus with Martin van Vuuren in 2018. The firm is an FSCA-authorised Financial Services Provider (FSP 48947) acquiring real South African agricultural assets at below-market value.
+              He co-founded Eridanus Ltd with Martin van Vuuren in 2018 and is also involved in running it. Eridanus Ltd acquires real South African agricultural assets at below-market value.
             </p>
             <a href="https://cobusnel.com/about" target="_blank" rel="noopener" class="btn-ghost">
               Full biography ${ARROW_SVG}
@@ -694,7 +694,7 @@ function renderOperator() {
           <div style="display:flex;flex-direction:column;gap:1px;background:var(--border);">
             ${[
               { badge: 'CA(SA)', title: 'Chartered Accountant', detail: 'EY Pretoria and EY Bermuda. All board exams passed first time.' },
-              { badge: 'FSP 48947', title: 'FSCA Authorised', detail: 'Licensed and regulated by the Financial Sector Conduct Authority of South Africa.' },
+              { badge: 'Eridanus', title: 'Also Involved in Running Eridanus Ltd', detail: 'Co-founder and Chief Investment Officer, backing real South African agricultural assets since 2018.' },
               { badge: 'VCC Active', title: 'Venture Capital Company', detail: 'SARS-approved VCC status. Active and registered with SARS.' },
               { badge: '2018', title: 'Eridanus Founded', detail: 'Acquiring South African agricultural assets at below-market value since 2018.' },
             ].map(item => `
@@ -779,7 +779,7 @@ function renderFinalCTA() {
           Apply for a Discovery Session ${ARROW_SVG}
         </a>
         <p style="font-size:11px;color:var(--text-3);margin-top:2rem;line-height:1.65;">
-          Eridanus is an authorised Financial Services Provider (FSP 48947). Returns are not guaranteed. All investments carry risk. This is not financial advice.
+          Returns are not guaranteed. All investments carry risk. This is not financial advice.
         </p>
       </div>
     </div>
@@ -927,8 +927,8 @@ function renderFooter() {
       <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:3rem;" class="grid-3">
         <div>
           <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--text);margin-bottom:1rem;">Cobus Nel</div>
-          <p style="font-size:13px;max-width:260px;margin-bottom:1rem;">South Africa's Capital Architect. CA(SA). Chief Investment Officer at Eridanus, an FSCA-authorised Financial Services Provider (FSP 48947).</p>
-          <p style="font-size:11px;color:var(--text-3);">FSP 48947 | Operating since 2018</p>
+          <p style="font-size:13px;max-width:260px;margin-bottom:1rem;">South Africa's Capital Architect. CA(SA). Also involved in running Eridanus Ltd.</p>
+          <p style="font-size:11px;color:var(--text-3);">Also involved in running Eridanus Ltd</p>
         </div>
         <div>
           <p style="font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.25rem;">Navigate</p>
@@ -953,7 +953,7 @@ function renderFooter() {
       </div>
       <div style="border-top:1px solid var(--border);padding-top:1.5rem;">
         <p style="font-size:11px;color:var(--text-3);line-height:1.7;margin-bottom:0.75rem;">
-          This website is for informational purposes only and does not constitute financial advice. Eridanus is an authorised Financial Services Provider, FSP No. 48947, registered with the Financial Sector Conduct Authority (FSCA) of South Africa. Returns are not guaranteed. Past performance is not indicative of future performance. All investments carry risk of loss. Consult a qualified financial and tax practitioner before investing.
+          This website is for informational purposes only and does not constitute financial advice. Cobus Nel is also involved in running Eridanus Ltd. Returns are not guaranteed. Past performance is not indicative of future performance. All investments carry risk of loss. Consult a qualified financial and tax practitioner before investing.
         </p>
         <p style="font-size:11px;color:var(--text-3);">&copy; ${new Date().getFullYear()} Cobus Nel. All rights reserved.</p>
       </div>
